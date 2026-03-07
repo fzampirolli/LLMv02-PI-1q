@@ -1,0 +1,17 @@
+# Segredos — NUNCA versionar
+config.yaml
+*.env
+*.venv
+logs/
+*_ALL.txt
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+.vscode/
+log*
+.DS_Store
+
+# Resultados de execução (opcionais)
+Simulado1/

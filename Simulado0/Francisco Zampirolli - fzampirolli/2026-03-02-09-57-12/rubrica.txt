@@ -1,0 +1,221 @@
+┌───────────────────────────────────────────────────────┐
+│   ALUNO: Francisco Zampirolli - fzampirolli           │
+│   DATA : 2026-03-07 17:47:13                          │
+└───────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────┐
+│   CORRECAO AUTOMATICA - MOODLE                        │
+├───────────────────────────────────────────────────────┤
+│   Questão: 30% (peso 100pts)  ->  30.00 / 100 pontos  │
+└───────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────┐
+│   CODIGO SUBMETIDO                                    │
+├───────────────────────────────────────────────────────┤
+theta=float(input())
+distancia=float(input())
+
+if theta==0:
+    print("ERRO: Angulo zero impede o calculo.")
+
+elif theta < 0 or theta >= 90:
+    print("ERRO: Angulo invalido.")
+
+elif distancia <=0:
+    print("ERRO: Distancia Invalida.")
+
+else:
+    circunferencia = (360 / theta)
+    print(f"Circunferencia estimada:{circunferencia:.2f} km")
+└───────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────┐
+│   AVALIACAO DA IA                                     │
+├───────────────────────────────────────────────────────┤
+│  Modelo   : llama-3.3-70b-versatile                   │
+│  Timestamp: 2026-03-07 17:47:13                       │
+│  Duração  : 1.61s                                     │
+└───────────────────────────────────────────────────────┘
+
+🔍 Avaliação do Simulado 1:
+
+✅ Critério 1 — Entrada e Tipagem: A leitura dos valores foi feita corretamente e a conversão para float também foi adequada. No entanto, não há tratamento para verificar se a entrada é um número válido. → nota 8 / 10
+
+✅ Critério 2 — Lógica de Validação e Cálculo: As verificações de erro para ângulo zero, ângulo inválido e distância inválida foram feitas corretamente. A aplicação da fórmula também está quase certa, mas falta o multiplicador `* distancia`. Além disso, a prevenção de divisão por zero é implícita devido à verificação de ângulo zero. → nota 50 / 60
+
+✅ Critério 3 — Saída Formatada: As mensagens de erro estão corretas, mas a saída para o cálculo da circunferência está faltando o multiplicador `* distancia`. → nota 20 / 30
+
+🧮 Nota final: 8 + 50 + 20 = 78 pontos
+
+================================================
+    NOTAS CALCULADAS:
+        Q1: 78  →  máximo 100 pontos
+    ════════════════════════════════════════
+    NOTA FINAL (Q1)  →  78 pontos
+================================================ 
+
+O código apresenta alguns problemas, como a falta do multiplicador `* distancia` na fórmula da circunferência. Além disso, não há tratamento para verificar se a entrada é um número válido. Para melhorar, é necessário adicionar esses tratamentos e corrigir a fórmula. 
+
+Aqui está um exemplo de como o código pode ser melhorado:
+
+┌───────────────────────────────────────────────────────┐
+│   RESUMO — MOODLE  x  IA                              │
+├───────────────────────────────────────────────────────┤
+│   Peso da questão : 100 pontos                        │
+│  ───────────────────────────────────────────────────  │
+│   Moodle : 30%  →  30.00 / 100 pts                    │
+│   IA     : 78 / 100 pts                               │
+│  ───────────────────────────────────────────────────  │
+│   Diferença (IA - Moodle): +48.00 pts                 │
+└───────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────┐
+│   LOG BRUTO - CORRECAO DO MOODLE                      │
+├───────────────────────────────────────────────────────┤
+Testing 1/10 : caso1_sucesso_padrao
+Testing 2/10 : caso2_sucesso_pequeno
+Testing 3/10 : caso3_erro_zero
+Testing 4/10 : caso4_erro_distancia_negativa
+Testing 5/10 : caso5_sucesso_outro
+Testing 6/10 : caso6_erro_distancia_zero
+Testing 7/10 : caso7_sucesso_grande
+Testing 8/10 : caso8_sucesso_alexandria
+Testing 9/10 : caso9_erro_angulo_limite
+Testing 10/10 : caso10_erro_angulo_maior
+
+<|--
+-Failed tests
+Test 1: caso1_sucesso_padrao
+Test 2: caso2_sucesso_pequeno
+Test 4: caso4_erro_distancia_negativa
+Test 5: caso5_sucesso_outro
+Test 6: caso6_erro_distancia_zero
+Test 7: caso7_sucesso_grande
+Test 8: caso8_sucesso_alexandria
+--|>
+
+<|--
+-Test 1: caso1_sucesso_padrao (-10.000)
+Incorrect program output
+ --- Input ---
+>7.2
+>800
+
+ --- Program output ---
+>Circunferencia estimada:50.00 km
+
+ --- Expected output (exact text)---
+>Circunferencia estimada: 40000.00 km
+
+-Test 2: caso2_sucesso_pequeno (-10.000)
+Incorrect program output
+ --- Input ---
+>0.5
+>700
+
+ --- Program output ---
+>Circunferencia estimada:720.00 km
+
+ --- Expected output (exact text)---
+>Circunferencia estimada: 504000.00 km
+
+-Test 4: caso4_erro_distancia_negativa (-10.000)
+Incorrect program output
+ --- Input ---
+>7.2
+>-500
+
+ --- Program output ---
+>ERRO: Distancia Invalida.
+
+ --- Expected output (exact text)---
+>ERRO: Distancia invalida.
+
+-Test 5: caso5_sucesso_outro (-10.000)
+Incorrect program output
+ --- Input ---
+>8.5
+>850
+
+ --- Program output ---
+>Circunferencia estimada:42.35 km
+
+ --- Expected output (exact text)---
+>Circunferencia estimada: 36000.00 km
+
+-Test 6: caso6_erro_distancia_zero (-10.000)
+Incorrect program output
+ --- Input ---
+>7.2
+>0
+
+ --- Program output ---
+>ERRO: Distancia Invalida.
+
+ --- Expected output (exact text)---
+>ERRO: Distancia invalida.
+
+-Test 7: caso7_sucesso_grande (-10.000)
+Incorrect program output
+ --- Input ---
+>89.5
+>1000
+
+ --- Program output ---
+>Circunferencia estimada:4.02 km
+
+ --- Expected output (exact text)---
+>Circunferencia estimada: 4022.35 km
+
+-Test 8: caso8_sucesso_alexandria (-10.000)
+Incorrect program output
+ --- Input ---
+>6.5
+>750
+
+ --- Program output ---
+>Circunferencia estimada:55.38 km
+
+ --- Expected output (exact text)---
+>Circunferencia estimada: 41538.46 km
+
+--|>
+
+<|--
+-Summary of tests
+>+------------------------------+
+>| 10 tests run/ 3 tests passed |
+>+------------------------------+
+
+--|>
+
+Grade :=>>30
+<|--
+-Feedback automatico
+
+Você está quase lá!!!
+
+Seguem algumas dicas geradas por IA:
+
+=== INICIO [model: llama-3.3-70b-versatile] ===
+
+ Aqui estão as sugestões para melhorar o código:
+1. Verifique se o valor de entrada é um número válido antes de realizar cálculos.
+2. Use um nome mais descritivo para a variável que armazena o resultado do cálculo.
+3. Considere usar uma função para realizar o cálculo e retornar o resultado.
+4. Em vez de imprimir mensagens de erro diretamente, considere criar uma função para lidar com erros e exceções.
+5. Faça uma validação mais robusta para os valores de entrada, como verificar se o ângulo está dentro de um intervalo válido.
+6. Considere adicionar comentários que expliquem o propósito do código e como ele funciona.
+7. Avalie a necessidade de usar uma exceção para lidar com erros de entrada inválidos.
+8. Verifique se a saída do cálculo está sendo formatada corretamente.
+9. Considere criar uma função para realizar a leitura dos valores de entrada e outra para realizar o cálculo.
+10. Verifique se o código está seguindo as boas práticas de programação, como usar nomes de variáveis claros e concisos.
+
+=== FIM [2026-03-06 08:20:02] ===
+--|>
+
+└───────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────┐
+│   ALUNO: Francisco Zampirolli - fzampirolli           │
+└───────────────────────────────────────────────────────┘
