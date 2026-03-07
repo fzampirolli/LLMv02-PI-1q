@@ -15,3 +15,6 @@ log*
 
 # Resultados de execução (opcionais)
 Simulado1/
+!Simulado0/**/execution.txt
+!Simulado0/**/Teste.py
+!Simulado0/**/rubrica.txt
