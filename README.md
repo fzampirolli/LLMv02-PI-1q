@@ -150,7 +150,7 @@ Nota: X + Y + Z = TOTAL/100
 ```
 
 > A linha no formato `X + Y + Z = TOTAL/100` ou `= TOTAL pontos` é usada pelo sistema  
-> para extrair a nota automaticamente e exibi-la no resumo comparativo.
+> para extrair a nota automaticamente e exibi-la no resumo comparativo. Portanto, não deve ser alterada.
 
 ---
 
@@ -193,7 +193,7 @@ Simulado0/
 └── ...
 ```
 
-### Renomear pastas (se necessário)
+### Renomear pastas
 
 Se os nomes das pastas vierem em formato diferente de `Nome Sobrenome - login`, use o script de renomeação antes de prosseguir:
 
@@ -203,7 +203,7 @@ bash renomear_pastas.sh Simulado0
 
 ---
 
-## 5. Executar a Correção
+## 5. Executar a Validação com IA
 
 ### macOS / Linux
 
@@ -299,11 +299,10 @@ O script `enviar_email.py` envia o `rubrica.txt` como anexo para cada aluno no e
 
 ### Configuração
 
-1. Preencha a seção `email:` no `config.yaml` com suas credenciais SMTP
-2. Ajuste no script `enviar_email.py`:
-   - `PASTA_BASE` — pasta com as submissões (ex: `"Simulado0"`)
+1. Preencha a seção `email:` no `config.yaml` com suas credenciais SMTP. 
+2. Prencha na seção `templates:` no mesmo arquivo:
    - `assunto` — personalize conforme a prova
-   - Texto do e-mail na função `gerar_texto_email()` — ajuste nome da disciplina e da prova
+   - `corpo: |` - ajuste nome da disciplina e os detalhes desse feedback por IA.
 
 ### Teste antes de enviar para os alunos
 
