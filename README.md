@@ -193,7 +193,7 @@ Simulado0/
 └── ...
 ```
 
-### Renomear pastas
+### Renomear pastas (se necessário)
 
 Se os nomes das pastas vierem em formato diferente de `Nome Sobrenome - login`, use o script de renomeação antes de prosseguir:
 
@@ -280,7 +280,7 @@ Get-Content Simulado0_ALL.txt | more
 
 ## 6. Estrutura do rubrica.txt
 
-Cada `rubrica.txt` na pasta do aluno contém:
+Cada `rubrica.txt` contém:
 
 | Seção | Conteúdo |
 |---|---|
@@ -299,7 +299,11 @@ O script `enviar_email.py` envia o `rubrica.txt` como anexo para cada aluno no e
 
 ### Configuração
 
-Preencha a seção `email:` no `config.yaml` com suas credenciais SMTP e na seção `templates:` o assunto e o texto da mensagem a ser enviada para cada aluno.
+1. Preencha a seção `email:` no `config.yaml` com suas credenciais SMTP
+2. Ajuste no script `enviar_email.py`:
+   - `PASTA_BASE` — pasta com as submissões (ex: `"Simulado0"`)
+   - `assunto` — personalize conforme a prova
+   - Texto do e-mail na função `gerar_texto_email()` — ajuste nome da disciplina e da prova
 
 ### Teste antes de enviar para os alunos
 
@@ -323,7 +327,8 @@ python3 enviar_email.py
 python enviar_email.py
 ```
 
-> ⚠️ **Atenção:** O e-mail enviado aos alunos deixa explícito que a correção é gerada por IA e pode conter imprecisões. **A nota oficial sempre é a atribuída pelo professor no Moodle.**
+> ⚠️ **Atenção:** O e-mail enviado aos alunos deixa explícito que a correção é gerada por IA  
+> e pode conter imprecisões. **A nota oficial sempre é a atribuída pelo professor no Moodle.**
 
 ---
 
@@ -372,7 +377,43 @@ No Windows o comando é `python` (sem o `3`). Use `python grader1q.py ...` diret
 
 ---
 
-## 10. Segurança
+## 10. Privacidade — O que é enviado à API Groq
+
+A cada correção, o sistema envia à API Groq **apenas dois campos**:
+
+| Campo | Conteúdo | Dado pessoal? |
+|---|---|---|
+| `system` | Conteúdo do `prompt1q.txt` (enunciado + critérios) | ❌ Não |
+| `user` | Nome do arquivo + código-fonte do aluno | ❌ Não |
+
+**Nunca são enviados:** nome do aluno, e-mail, login, RA, CPF, turma ou qualquer outro metadado. Esses dados existem apenas como nomes de pastas locais e nunca são incluídos na requisição HTTP.
+
+O trecho abaixo reproduz exatamente o payload que trafega para a API (ver `llm_interface_prova.py`, método `_single_call`):
+
+```json
+{
+  "model": "llama-3.3-70b-versatile",
+  "messages": [
+    {
+      "role": "system",
+      "content": "Você é um professor corretor. Avalie o código Python abaixo segundo os critérios:\n\nCritério 1 - Entrada e Tipagem (máx: 10 pts): ...\nCritério 2 - Lógica de Validação e Cálculo (máx: 60 pts): ...\nCritério 3 - Saída Formatada (máx: 30 pts): ...\n\nAo final, escreva obrigatoriamente:\nNota: X + Y + Z = TOTAL/100"
+    },
+    {
+      "role": "user",
+      "content": "# ==================== solucao.py ====================\nangulo = float(input())\ndistancia = float(input())\n\nif angulo > 0 and angulo < 90 and distancia > 0:\n    c = (360/angulo)*distancia\n    print(f\"Circunferencia estimada: {c:.2f} km\")\nelif angulo == 0:\n    print(\"ERRO: Angulo zero impede o calculo.\")\n..."
+    }
+  ],
+  "temperature": 0.7,
+  "max_tokens": 8192,
+  "stream": false
+}
+```
+
+> ⚠️ **Única ressalva:** se o professor incluir dados identificadores dentro do próprio `prompt1q.txt` (ex: nome de aluno no enunciado), esses dados serão transmitidos. O enunciado da questão normalmente não contém esse tipo de informação.
+
+---
+
+## 11. Segurança
 
 O `config.yaml` contém sua API key e senha de e-mail. Ele já está no `.gitignore` do projeto, mas certifique-se de que o seu também contenha:
 
