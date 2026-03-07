@@ -30,85 +30,151 @@ Para cada aluno, gera um `rubrica.txt` com a análise da IA e o compara com a no
 
 ---
 
-## Pré-requisitos
+## 1. Clonar o Projeto
 
-- Python 3.8+
-- Conta gratuita em [console.groq.com](https://console.groq.com) para obter a API Key
-- Dependências Python:
+### macOS e Linux
 
+Abra o Terminal e execute:
+
+```bash
+git clone https://github.com/fzampirolli/LLMv02-PI-1q.git
+cd LLMv02-PI-1q
+```
+
+### Windows
+
+Instale o [Git para Windows](https://git-scm.com/download/win) se ainda não tiver.  
+Abra o **Git Bash** (recomendado) ou o PowerShell e execute:
+
+```bash
+git clone https://github.com/fzampirolli/LLMv02-PI-1q.git
+cd LLMv02-PI-1q
+```
+
+> **Recomendação para Windows:** use o **Git Bash** (instalado com o Git) para todos os comandos deste guia. O `runProva1q.sh` requer bash — no PowerShell use o caminho alternativo indicado na seção de execução.
+
+---
+
+## 2. Pré-requisitos
+
+### Python 3.8+
+
+| Sistema | Verificar versão | Instalar |
+|---|---|---|
+| macOS | `python3 --version` | [python.org](https://www.python.org/downloads/) ou `brew install python` |
+| Linux | `python3 --version` | `sudo apt install python3` (Debian/Ubuntu) |
+| Windows | `python --version` | [python.org](https://www.python.org/downloads/) — marque **"Add to PATH"** na instalação |
+
+### Instalar dependências Python
+
+**macOS / Linux:**
+```bash
+pip3 install aiohttp pyyaml
+```
+
+**Windows (PowerShell ou Git Bash):**
 ```bash
 pip install aiohttp pyyaml
 ```
 
+Se houver erro de permissão no Linux/macOS:
+```bash
+pip3 install aiohttp pyyaml --break-system-packages
+```
+
+### Chave de API Groq (gratuita)
+
+1. Acesse [console.groq.com](https://console.groq.com) e crie uma conta
+2. Vá em **API Keys** → **Create API Key**
+3. Copie a chave (começa com `gsk_...`) — você usará no `config.yaml`
+
 ---
 
-## Configuração Inicial
+## 3. Configuração Inicial
 
-### 1. Copiar o template de configuração
+### Copiar o template de configuração
 
+**macOS / Linux / Git Bash:**
 ```bash
 cp config.yaml.example config.yaml
 ```
 
-Edite o `config.yaml` e preencha:
+**Windows (PowerShell):**
+```powershell
+Copy-Item config.yaml.example config.yaml
+```
+
+### Editar o config.yaml
+
+Abra o `config.yaml` em qualquer editor de texto e preencha os campos obrigatórios:
 
 ```yaml
-# Credenciais de e-mail (para enviar feedbacks, se desejar)
+# Chave da API Groq (obrigatório)
+groq:
+  api_key: "gsk_..."          # cole sua chave aqui
+
+# Credenciais de e-mail SMTP (só necessário para enviar feedbacks)
 email:
   smtp_server: smtp.ufabc.edu.br
   smtp_port: 587
   from_address: seu_email@ufabc.edu.br
   password: "sua_senha"
 
-# Chave da API Groq
-groq:
-  api_key: "gsk_..."       # obtenha em console.groq.com/keys
-
 # Configuração da prova
 grading:
   weights:
-    q1: 100                # pontuação máxima da questão
+    q1: 100                   # pontuação máxima da questão
   prompt_file: "prompt1q.txt"
 
-# Pasta das submissões
+# Pasta com as submissões dos alunos
 paths:
   student_base_dir: "Simulado0"
 ```
 
-> ⚠️ **Nunca versione o `config.yaml`**. Adicione-o ao `.gitignore`:
-> ```
-> config.yaml
-> ```
+> ⚠️ **Nunca versione o `config.yaml`** — ele contém sua API key e senha de e-mail.  
+> Ele já está listado no `.gitignore` do projeto.
 
-### 2. Criar o prompt da questão
+### Criar o prompt da questão
 
-Crie o arquivo `prompt1q.txt` com as instruções para a IA e o enunciado da questão. Exemplo:
+Edite o arquivo `prompt1q.txt` com as instruções para a IA e o enunciado completo da questão. Exemplo de estrutura:
 
 ```
 Você é um professor corretor. Avalie o código Python abaixo segundo os critérios:
 
 Critério 1 - Entrada e Tipagem (máx: 10 pts): ...
-Critério 2 - Lógica (máx: 60 pts): ...
-Critério 3 - Saída formatada (máx: 30 pts): ...
+Critério 2 - Lógica de Validação e Cálculo (máx: 60 pts): ...
+Critério 3 - Saída Formatada (máx: 30 pts): ...
 
 Ao final, escreva obrigatoriamente uma linha no formato:
 Nota: X + Y + Z = TOTAL/100
 ```
 
-A linha de nota no formato `= TOTAL/100` garante a extração automática da nota pelo sistema.
+> A linha no formato `X + Y + Z = TOTAL/100` ou `= TOTAL pontos` é usada pelo sistema  
+> para extrair a nota automaticamente e exibi-la no resumo comparativo.
 
 ---
 
-## Baixar as Submissões do Moodle VPL
+## 4. Baixar as Submissões do Moodle VPL
 
 1. Acesse a atividade **VPL** no Moodle
 2. Clique em **Lista de envios**
-3. Na tabela de alunos, localize a **seta para baixo** (⬇) no cabeçalho da tabela — fica discreto, no canto direito do cabeçalho
+3. Na tabela de alunos, localize a **seta para baixo** (⬇) no **canto direito do cabeçalho** da tabela — fica bem discreta
 4. Clique em **Baixar envios** ou **Baixar todos os envios**  
-   — o sistema já considera automaticamente a **última submissão** de cada aluno
+   — o Moodle já inclui apenas a **última submissão** de cada aluno
 5. Descompacte o arquivo `.zip` baixado
 6. Mova a pasta descompactada para dentro do projeto:
 
+**macOS / Linux:**
+```bash
+mv ~/Downloads/Simulado0 ./Simulado0
+```
+
+**Windows (PowerShell):**
+```powershell
+Move-Item "$env:USERPROFILE\Downloads\Simulado0" .\Simulado0
+```
+
+**Windows (Git Bash):**
 ```bash
 mv ~/Downloads/Simulado0 ./Simulado0
 ```
@@ -127,41 +193,64 @@ Simulado0/
 └── ...
 ```
 
-> **RENOMEAR PASTAS:** Corrigir os nomes das pastas dos alunos para `Nome Sobrenome - login`, usando o script:
+### Renomear pastas
+
+Se os nomes das pastas vierem em formato diferente de `Nome Sobrenome - login`, use o script de renomeação antes de prosseguir:
 
 ```bash
-renomear_pastas.sh Simulado0
+bash renomear_pastas.sh Simulado0
 ```
+
 ---
 
-## Execução da Correção
+## 5. Executar a Correção
+
+### macOS / Linux
 
 ```bash
 chmod +x runProva1q.sh
 ./runProva1q.sh Simulado0
 ```
 
-Opções disponíveis:
+### Windows — Git Bash
 
 ```bash
-./runProva1q.sh <pasta_alunos> [config.yaml] [--max-concurrent N]
+bash runProva1q.sh Simulado0
+```
 
-# Exemplos:
+### Windows — PowerShell (alternativa sem bash)
+
+```powershell
+python grader1q.py Simulado0 config.yaml --max-concurrent 3
+```
+
+### Opções disponíveis
+
+```
+./runProva1q.sh <pasta_alunos> [config.yaml] [--max-concurrent N]
+```
+
+| Parâmetro | Padrão | Descrição |
+|---|---|---|
+| `pasta_alunos` | — | Pasta com as submissões (obrigatório) |
+| `config.yaml` | `config.yaml` | Arquivo de configuração |
+| `--max-concurrent N` | `3` | Chamadas simultâneas à API Groq |
+
+Exemplos:
+```bash
 ./runProva1q.sh Simulado0
 ./runProva1q.sh Simulado0 config.yaml
 ./runProva1q.sh Simulado0 config.yaml --max-concurrent 5
 ```
 
-O parâmetro `--max-concurrent` controla quantas chamadas à API Groq ocorrem simultaneamente. O padrão é `3`, adequado para o plano gratuito (limite de 30 req/min).
-
 ### O que acontece durante a execução
 
-1. O script valida o ambiente (Python, dependências, arquivos)
-2. Para cada aluno, localiza a **última submissão** (pasta com o timestamp mais recente)
+1. Valida o ambiente (Python, dependências, arquivos)
+2. Para cada aluno, localiza a **última submissão** (pasta com o timestamp mais recente no nome)
 3. Envia o código + prompt para a API Groq de forma **assíncrona** — todos os alunos são processados em paralelo, respeitando o limite de concorrência
-4. Se a LLM não responder, tenta automaticamente outros modelos da lista com backoff exponencial
+4. Se um modelo LLM falhar, tenta automaticamente o próximo da lista com backoff exponencial
 5. Só grava o `rubrica.txt` se a LLM retornar uma resposta válida
-6. Ao final, consolida todos os resultados em `Simulado0_ALL.txt`
+6. Consolida todos os resultados em `Simulado0_ALL.txt`
 
 ### Saída gerada
 
@@ -177,17 +266,21 @@ E o consolidado geral:
 Simulado0_ALL.txt
 ```
 
-Para visualizar todos os resultados de uma vez:
+Para visualizar todos os resultados:
 
 ```bash
+# macOS / Linux / Git Bash
 cat Simulado0_ALL.txt | less
+
+# Windows (PowerShell)
+Get-Content Simulado0_ALL.txt | more
 ```
 
 ---
 
-## Estrutura do rubrica.txt
+## 6. Estrutura do rubrica.txt
 
-Cada `rubrica.txt` contém:
+Cada `rubrica.txt` na pasta do aluno contém:
 
 | Seção | Conteúdo |
 |---|---|
@@ -200,32 +293,41 @@ Cada `rubrica.txt` contém:
 
 ---
 
-## Envio de Feedbacks por E-mail (Opcional)
+## 7. Envio de Feedbacks por E-mail (Opcional)
 
-O script `enviar_email.py` envia o `rubrica.txt` como anexo para cada aluno.
+O script `enviar_email.py` envia o `rubrica.txt` como anexo para cada aluno no endereço `login@aluno.ufabc.edu.br`.
 
-Antes de usar, configure as credenciais SMTP no `config.yaml` e ajuste no script:
+### Configuração
 
-- `PASTA_BASE` — pasta com as submissões (ex: `"Simulado0"`)
-- `email_destino` — durante testes, redirecione para seu próprio e-mail  
-  (`email_destino = 'seu@@aluno.ufabc.edu.br'`)
-- `assunto` — personalize conforme a prova
-- O texto do e-mail em `config.yaml` — ajuste em `templates`.
-- Para produção, comentar a linha 138 de `enviar_email.py`:
-  > `email_to = "fzampirolli@gmail.com" # TESTE`
+Preencha a seção `email:` no `config.yaml` com suas credenciais SMTP e na seção `templates:` o assunto e o texto da mensagem a ser enviada para cada aluno.
 
+### Teste antes de enviar para os alunos
 
-Para executar:
+Na linha 138 do script, o endereço está redirecionado para um e-mail de teste:
 
+```python
+email_destino = 'fzampirolli@gmail.com'   # TESTE — comente para produção
+```
+
+Antes de disparar para todos os alunos, rode com seu próprio e-mail para validar o conteúdo. Quando estiver satisfeito, comente essa linha para que o sistema use o endereço real de cada aluno.
+
+### Executar
+
+**macOS / Linux / Git Bash:**
 ```bash
 python3 enviar_email.py
 ```
 
-> ⚠️ **Atenção:** O e-mail deixa explícito que a correção é gerada por IA e pode conter imprecisões. **A nota oficial sempre é a atribuída pelo professor no Moodle.**
+**Windows (PowerShell):**
+```powershell
+python enviar_email.py
+```
+
+> ⚠️ **Atenção:** O e-mail enviado aos alunos deixa explícito que a correção é gerada por IA e pode conter imprecisões. **A nota oficial sempre é a atribuída pelo professor no Moodle.**
 
 ---
 
-## Modelos LLM Disponíveis
+## 8. Modelos LLM Disponíveis
 
 Configurados em `config.yaml` na seção `groq.models`. O sistema tenta cada modelo em ordem e passa para o próximo em caso de falha:
 
@@ -236,37 +338,43 @@ Configurados em `config.yaml` na seção `groq.models`. O sistema tenta cada mod
 | `llama-3.1-8b-instant` | Mais rápido, menor qualidade |
 | `openai/gpt-oss-20b` | Rápido |
 
-O plano gratuito do Groq permite **30 requisições por minuto**. Para turmas grandes, ajuste `--max-concurrent` para `2` ou `3`.
+O plano gratuito do Groq permite **30 requisições por minuto**. Consulte os limites atuais em [console.groq.com/settings/limits](https://console.groq.com/settings/limits).
 
 ---
 
-## Solução de Problemas
+## 9. Solução de Problemas
 
 **`❌ Execute com bash: bash runProva1q.sh`**  
-O script requer bash. Execute explicitamente: `bash runProva1q.sh Simulado0`
+No macOS/Linux execute `bash runProva1q.sh Simulado0`.  
+No Windows use Git Bash ou chame diretamente: `python grader1q.py Simulado0`.
 
 **Nota Moodle aparece como `0.00` ou `N/A`**  
-Verifique se existe a pasta `TIMESTAMP.ceg/execution.txt` para o aluno.  
-O sistema extrai a nota do padrão `Grade :=>>100` no arquivo.
+Verifique se existe `TIMESTAMP.ceg/execution.txt` na pasta do aluno.  
+O sistema extrai a nota do padrão `Grade :=>>100` nesse arquivo.
 
 **Nota da IA aparece como `?`**  
-O prompt não gerou uma linha de nota no formato esperado (`= TOTAL/100`).  
-Revise o `prompt1q.txt` para instruir explicitamente a IA a escrever a nota nesse formato.
+A resposta da IA não contém uma linha de nota reconhecível.  
+Revise o `prompt1q.txt` e instrua explicitamente a IA a escrever:
+```
+Nota: X + Y + Z = TOTAL/100
+```
 
 **Erro HTTP 400 (`max_tokens`)**  
-O `max_response_chars` no `config.yaml` está acima do limite da Groq.  
-O sistema já limita automaticamente a 8192 tokens internamente.
+O `max_response_chars` no `config.yaml` excede o limite da Groq.  
+O sistema já limita automaticamente a 8192 tokens — não é necessário ajustar.
 
 **Nenhum arquivo de código encontrado**  
 Extensões suportadas: `.py`, `.java`, `.c`, `.cpp`, `.js`, `.ts`.  
 Verifique se os arquivos estão diretamente dentro da pasta de timestamp, não em subpastas.
 
+**Windows: `python3` não reconhecido**  
+No Windows o comando é `python` (sem o `3`). Use `python grader1q.py ...` diretamente.
+
 ---
 
-## Segurança
+## 10. Segurança
 
-- `config.yaml` contém sua API key e senha de e-mail — **nunca suba para o Git**
-- Adicione ao `.gitignore`:
+O `config.yaml` contém sua API key e senha de e-mail. Ele já está no `.gitignore` do projeto, mas certifique-se de que o seu também contenha:
 
 ```
 config.yaml
@@ -274,3 +382,5 @@ config.yaml
 logs/
 *_ALL.txt
 ```
+
+Nunca compartilhe nem publique o `config.yaml`.

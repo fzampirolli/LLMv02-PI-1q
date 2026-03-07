@@ -1,20 +1,22 @@
-# Segredos — NUNCA versionar
+# === Segredos e Ambiente (NUNCA versionar) ===
 config.yaml
-*.env
-*.venv
-logs/
-*_ALL.txt
+.venv/
+venv/
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
 *.log
-.vscode/
-log*
 .DS_Store
+.vscode/
+log_envios.csv
 
-# Resultados de execução (opcionais)
+# === Pastas de Dados ===
+# Ignoramos a Simulado1 completamente
 Simulado1/
+*_ALL.txt
+
+# Para a Simulado0, ignoramos o conteúdo, mas permitimos os arquivos específicos
+Simulado0/**/*
+!Simulado0/**/
 !Simulado0/**/execution.txt
 !Simulado0/**/Teste.py
 !Simulado0/**/rubrica.txt
