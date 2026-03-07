@@ -80,24 +80,37 @@ def extrair_nota_texto(texto: str, q_weight: int = 100) -> str:
     """
     Extrai a nota final do texto livre retornado pela IA.
     Estratégias em ordem de confiabilidade:
-      0. "X + Y + Z = N pontos"  — soma explícita sem /peso (ex: "8 + 55 + 20 = 83 pontos")
-      1. "= NN/peso"             — soma com barra (ex: "= 60/100")
-      2. "Nota final" + NN/peso  — em até 3 linhas após o marcador
-      3. "NN/peso"               — qualquer fração sobre o peso
-      4. "Total: NN" ou "Nota final: NN"
-      5. Último número inteiro plausível (≤ q_weight)
+
+      S0a: soma com texto entre parcelas  "10 (Critério 1) + 60 (...) = 100 pontos"
+      S0b: soma limpa                     "10 + 40 + 30 = 80"
+      S1 : barra sobre peso               "= 60/100"
+      S2 : "Nota final" + N/peso (3 linhas)
+      S3 : qualquer "N/peso"
+      S4 : "Nota Final: N pontos" ou "Total: N pontos"
+      S5 : "→ N pontos"
+      S6 : último número plausível ≤ q_weight
     """
-    # Estratégia 0: "X + Y + Z = N pontos" — captura o total da soma
+    # S0a: soma com texto arbitrário entre parcelas, terminando em "= N"
     m = re.search(
-        r'[0-9]+\s*\+\s*[0-9]+[^=\n]*=\s*([0-9]+(?:[.,][0-9]+)?)\s*pontos',
+        r'[0-9]+(?:[^+\n=]*\+[^+\n=]*[0-9]+)+\s*=\s*([0-9]+(?:[.,][0-9]+)?)',
         texto, re.IGNORECASE
     )
     if m:
         val = float(m.group(1).replace(',', '.'))
-        if 0 <= val <= q_weight:
+        if 0 < val <= q_weight:
             return m.group(1).replace(',', '.')
 
-    # Estratégia 1: "= NN/peso"
+    # S0b: soma limpa "X + Y + ... = N"
+    m = re.search(
+        r'[0-9]+(?:\s*\+\s*[0-9]+)+\s*=\s*([0-9]+(?:[.,][0-9]+)?)',
+        texto, re.IGNORECASE
+    )
+    if m:
+        val = float(m.group(1).replace(',', '.'))
+        if 0 < val <= q_weight:
+            return m.group(1).replace(',', '.')
+
+    # S1: "= N/peso"
     m = re.search(
         r'=\s*([0-9]+(?:[.,][0-9]+)?)\s*/\s*' + str(q_weight),
         texto, re.IGNORECASE
@@ -105,7 +118,7 @@ def extrair_nota_texto(texto: str, q_weight: int = 100) -> str:
     if m:
         return m.group(1).replace(',', '.')
 
-    # Estratégia 2: "Nota final" seguida de NN/peso em até 3 linhas
+    # S2: "Nota final" seguida de N/peso em até 3 linhas
     m = re.search(
         r'nota\s+final[^\n]*\n(?:[^\n]*\n){0,3}[^\n]*?([0-9]+(?:[.,][0-9]+)?)\s*/\s*' + str(q_weight),
         texto, re.IGNORECASE | re.DOTALL
@@ -113,7 +126,7 @@ def extrair_nota_texto(texto: str, q_weight: int = 100) -> str:
     if m:
         return m.group(1).replace(',', '.')
 
-    # Estratégia 3: qualquer "NN/peso" no texto
+    # S3: qualquer "N/peso"
     m = re.search(
         r'([0-9]+(?:[.,][0-9]+)?)\s*/\s*' + str(q_weight),
         texto, re.IGNORECASE
@@ -123,9 +136,9 @@ def extrair_nota_texto(texto: str, q_weight: int = 100) -> str:
         if 0 <= val <= q_weight:
             return m.group(1).replace(',', '.')
 
-    # Estratégia 4: "Total: NN" ou "Nota final: NN" plausível
+    # S4: "Nota Final: N pontos" ou "Total: N pontos"
     m = re.search(
-        r'(?:total|nota\s+final)[^:\n]*:\s*([0-9]+(?:[.,][0-9]+)?)',
+        r'(?:nota\s*final|total)[^:\n→]*[:\→]\s*([0-9]+(?:[.,][0-9]+)?)\s*pontos',
         texto, re.IGNORECASE
     )
     if m:
@@ -133,7 +146,14 @@ def extrair_nota_texto(texto: str, q_weight: int = 100) -> str:
         if 0 < val <= q_weight:
             return m.group(1).replace(',', '.')
 
-    # Estratégia 5: último número inteiro plausível (≤ q_weight)
+    # S5: "→ N pontos"
+    m = re.search(r'[→>]\s*([0-9]+(?:[.,][0-9]+)?)\s*pontos', texto, re.IGNORECASE)
+    if m:
+        val = float(m.group(1).replace(',', '.'))
+        if 0 < val <= q_weight:
+            return m.group(1).replace(',', '.')
+
+    # S6: último número plausível ≤ q_weight
     nums = re.findall(r'\b([0-9]+(?:[.,][0-9]+)?)\b', texto)
     for n in reversed(nums):
         try:
