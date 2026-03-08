@@ -184,7 +184,7 @@ def limpar_resposta(texto: str) -> str:
 # DESCOBERTA DE ARQUIVOS DE SUBMISSÃO
 # =============================================================================
 
-SUPPORTED_EXTENSIONS = ['py', 'java', 'c', 'cpp', 'js', 'ts']
+SUPPORTED_EXTENSIONS = ['py', 'java', 'c', 'cpp', 'js', 'r']
 
 
 def encontrar_submissao(student_dir: Path) -> Optional[Tuple[Path, Path]]:
@@ -407,6 +407,16 @@ async def run(
             continue
 
         submission_dir, code_file = result
+
+        # === NOVA ALTERAÇÃO: Pular se rubrica já existir ===
+        rpath = submission_dir / rubric_output
+        if rpath.exists():
+            logger.info(f"  ⏭  {student_name}: rubrica já existe. Pulando LLM.")
+            # Opcional: se quiser que ele apareça no consolidado final mesmo pulando, 
+            # seria necessário ler o arquivo existente. Caso contrário, ele apenas pula.
+            continue 
+        # ===================================================
+        
         code_text = code_file.read_text(errors='replace')
         num_lines = len(code_text.splitlines())
 
