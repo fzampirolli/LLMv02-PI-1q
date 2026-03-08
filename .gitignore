@@ -12,6 +12,7 @@ log_envios.csv
 # === Pastas de Dados ===
 # Ignoramos a Simulado1 completamente
 Simulado1/
+Simulado1*
 logs/
 *_ALL.txt
 

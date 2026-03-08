@@ -1,6 +1,6 @@
 ┌───────────────────────────────────────────────────────┐
 │   ALUNO: Francisco Zampirolli - fzampirolli           │
-│   DATA : 2026-03-07 17:47:13                          │
+│   DATA : 2026-03-08 09:54:46                          │
 └───────────────────────────────────────────────────────┘
 
 ┌───────────────────────────────────────────────────────┐
@@ -33,30 +33,26 @@ else:
 │   AVALIACAO DA IA                                     │
 ├───────────────────────────────────────────────────────┤
 │  Modelo   : llama-3.3-70b-versatile                   │
-│  Timestamp: 2026-03-07 17:47:13                       │
-│  Duração  : 1.61s                                     │
+│  Timestamp: 2026-03-08 09:54:46                       │
+│  Duração  : 2.42s                                     │
 └───────────────────────────────────────────────────────┘
 
 🔍 Avaliação do Simulado 1:
 
-✅ Critério 1 — Entrada e Tipagem: A leitura dos valores foi feita corretamente e a conversão para float também foi adequada. No entanto, não há tratamento para verificar se a entrada é um número válido. → nota 8 / 10
+✅ Critério 1 — Entrada e Tipagem: A leitura dos valores é feita corretamente com `float(input())`, garantindo a conversão para float. No entanto, falta uma mensagem para solicitar a entrada dos valores, o que não foi solicitado explicitamente. Considerando apenas a tipagem e leitura, nota 10 / 10.
 
-✅ Critério 2 — Lógica de Validação e Cálculo: As verificações de erro para ângulo zero, ângulo inválido e distância inválida foram feitas corretamente. A aplicação da fórmula também está quase certa, mas falta o multiplicador `* distancia`. Além disso, a prevenção de divisão por zero é implícita devido à verificação de ângulo zero. → nota 50 / 60
+✅ Critério 2 — Lógica de Validação e Cálculo: As verificações de erro para ângulo zero, ângulo inválido e distância inválida estão corretas. A aplicação da fórmula também está quase correta, mas falta a multiplicação pela distância (`d`). Além disso, a prevenção de divisão por zero é implicitamente tratada com a verificação de ângulo zero, mas não é explicitamente considerada para outros casos. Nota 40 / 60, considerando a falta da multiplicação pela distância na fórmula e a ausência de uma verificação explícita para evitar divisão por zero em outros contextos.
 
-✅ Critério 3 — Saída Formatada: As mensagens de erro estão corretas, mas a saída para o cálculo da circunferência está faltando o multiplicador `* distancia`. → nota 20 / 30
+✅ Critério 3 — Saída Formatada: As mensagens de erro estão corretas, mas a saída do resultado está faltando a palavra "estimada" após "Circunferencia" e a unidade "km" está presente. A formatação do resultado com 2 casas decimais também está correta. Nota 20 / 30, considerando a falta da palavra "estimada" no resultado.
 
-🧮 Nota final: 8 + 50 + 20 = 78 pontos
+🧮 Nota final: 10 + 40 + 20 = 70 pontos
 
 ================================================
     NOTAS CALCULADAS:
-        Q1: 78  →  máximo 100 pontos
+        Q1: TOTAL  →  máximo 100 pontos
     ════════════════════════════════════════
-    NOTA FINAL (Q1)  →  78 pontos
-================================================ 
-
-O código apresenta alguns problemas, como a falta do multiplicador `* distancia` na fórmula da circunferência. Além disso, não há tratamento para verificar se a entrada é um número válido. Para melhorar, é necessário adicionar esses tratamentos e corrigir a fórmula. 
-
-Aqui está um exemplo de como o código pode ser melhorado:
+    NOTA FINAL (Q1)  →  70 pontos
+================================================
 
 ┌───────────────────────────────────────────────────────┐
 │   RESUMO — MOODLE  x  IA                              │
@@ -64,9 +60,9 @@ Aqui está um exemplo de como o código pode ser melhorado:
 │   Peso da questão : 100 pontos                        │
 │  ───────────────────────────────────────────────────  │
 │   Moodle : 30%  →  30.00 / 100 pts                    │
-│   IA     : 78 / 100 pts                               │
+│   IA     : 70 / 100 pts                               │
 │  ───────────────────────────────────────────────────  │
-│   Diferença (IA - Moodle): +48.00 pts                 │
+│   Diferença (IA - Moodle): +40.00 pts                 │
 └───────────────────────────────────────────────────────┘
 
 ┌───────────────────────────────────────────────────────┐

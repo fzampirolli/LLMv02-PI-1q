@@ -293,7 +293,66 @@ Cada `rubrica.txt` contém:
 
 ---
 
-## 7. Envio de Feedbacks por E-mail (Opcional)
+## 7. Gerar Planilha CSV com as Notas
+
+O arquivo consolidado gerado pelo sistema (`*_ALL.txt`) contém todos os alunos e o resumo **Moodle × IA**.
+Para facilitar análise em planilhas (Excel, LibreOffice, Google Sheets), é possível convertê-lo para **CSV**.
+
+### Script de conversão
+
+O projeto inclui o script:
+
+```
+gerar_relatorio.py
+```
+
+Ele extrai automaticamente:
+
+* Nome do aluno
+* Login
+* Nota Moodle por questão
+* Nota IA por questão
+* Totais
+* Diferença entre IA e Moodle
+
+### Executar
+
+```bash
+python3 gerar_relatorio.py Simulado1_ALL.txt
+```
+
+O script gera automaticamente:
+
+```
+Simulado1_ALL.csv
+```
+
+ou seja, **o mesmo nome do arquivo de entrada, com extensão `.csv`**.
+
+### Estrutura do CSV
+
+O arquivo gerado possui as colunas:
+
+| Coluna       | Descrição                          |
+| ------------ | ---------------------------------- |
+| Nome         | Nome completo do aluno             |
+| Login        | Login Moodle                       |
+| Total_Moodle | Nota do Moodle                     |
+| Total_IA     | Nota da IA                         |
+| Diferenca    | `Total_IA - Total_Moodle`          |
+
+
+### Abrir no Excel / LibreOffice
+
+* **Excel:** Arquivo → Abrir → selecione `*.csv`
+* **LibreOffice Calc:** Arquivo → Abrir → delimitador `,`
+* **Google Sheets:** Upload → selecione o CSV
+
+Isso permite **ordenar alunos, filtrar discrepâncias entre IA e Moodle e gerar estatísticas da prova**.
+
+---
+
+## 8. Envio de Feedbacks por E-mail (Opcional)
 
 O script `enviar_email.py` envia o `rubrica.txt` como anexo para cada aluno no endereço `login@aluno.ufabc.edu.br`.
 
@@ -331,7 +390,7 @@ python enviar_email.py
 
 ---
 
-## 8. Modelos LLM Disponíveis
+## 9. Modelos LLM Disponíveis
 
 Configurados em `config.yaml` na seção `groq.models`. O sistema tenta cada modelo em ordem e passa para o próximo em caso de falha:
 
@@ -346,7 +405,7 @@ O plano gratuito do Groq permite **30 requisições por minuto**. Consulte os li
 
 ---
 
-## 9. Solução de Problemas
+## 10. Solução de Problemas
 
 **`❌ Execute com bash: bash runProva1q.sh`**  
 No macOS/Linux execute `bash runProva1q.sh Simulado0`.  
@@ -376,7 +435,7 @@ No Windows o comando é `python` (sem o `3`). Use `python grader1q.py ...` diret
 
 ---
 
-## 10. Privacidade — O que é enviado à API Groq
+## 11. Privacidade — O que é enviado à API Groq
 
 A cada correção, o sistema envia à API Groq **apenas dois campos**:
 
@@ -412,7 +471,7 @@ O trecho abaixo reproduz exatamente o payload que trafega para a API (ver `llm_i
 
 ---
 
-## 11. Segurança
+## 12. Segurança
 
 O `config.yaml` contém sua API key e senha de e-mail. Ele já está no `.gitignore` do projeto, mas certifique-se de que o seu também contenha:
 
