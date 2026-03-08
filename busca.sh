@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# busca.sh - Verifica se as subpastas de submissão possuem o arquivo rubrica.txt
+# ./busca.sh Simulado1
 
 # Verifica se o parâmetro foi passado
 if [ -z "$1" ]; then
