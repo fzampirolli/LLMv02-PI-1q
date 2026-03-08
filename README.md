@@ -19,6 +19,7 @@ Para cada aluno, gera um `rubrica.txt` com a análise da IA e o compara com a no
 ├── config.yaml             ← suas credenciais e configurações (NÃO versionar)
 ├── config.yaml.example     ← template de configuração
 ├── prompt1q.txt            ← instruções + enunciado da questão para a IA
+├── gerar_relatorio.py      ← gera CSV a partir do relatório consolidade TXT
 └── Simulado0/              ← pasta com submissões dos alunos (gerada pelo Moodle)
     ├── Nome Aluno - login/
     │   ├── 2026-03-04-10-14-39/       ← última submissão (pasta timestamp)
