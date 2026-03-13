@@ -25,14 +25,13 @@
 # Arquivos lidos no diretório corrente:
 #   config.yaml    — configurações (API key, modelos, pesos, prompt_file …)
 #   prompt1q.txt   — system prompt base (campo grading.prompt_file no YAML)
-#   p1Q1.txt       — rubrica/enunciado   (campo grading.rubric_files.q1)
-#   exemplo.txt    — exemplo opcional    (campo grading.optional_example_file)
 #
 # Saída por aluno:
 #   Simulado0/<Nome>/TIMESTAMP/rubrica.txt
 #
 # Consolidado final:
 #   Simulado0_ALL.txt
+#   Simulado0_ALL.csv
 #
 # Diferencial em relação ao runProva2q.sh:
 #   - Chamadas assíncronas via Python/aiohttp (sem sleep fixo entre alunos)
@@ -206,10 +205,11 @@ if [ ${#MISSING_DEPS[@]} -gt 0 ]; then
 fi
 print_success "aiohttp e pyyaml OK"
 
-# grader1q.py e llm_interface_prova.py
+# grader1q.py, llm_interface_prova.py e gerar_relatorio.py
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 GRADER="$SCRIPT_DIR/grader1q.py"
 LLM_IFACE="$SCRIPT_DIR/llm_interface_prova.py"
+RELATORIO="$SCRIPT_DIR/gerar_relatorio.py"  # FIX 4: validação adicionada
 
 if [ ! -f "$GRADER" ]; then
     print_error "grader1q.py não encontrado em: $SCRIPT_DIR"
@@ -219,7 +219,11 @@ if [ ! -f "$LLM_IFACE" ]; then
     print_error "llm_interface_prova.py não encontrado em: $SCRIPT_DIR"
     exit 1
 fi
-print_success "grader1q.py e llm_interface_prova.py OK"
+if [ ! -f "$RELATORIO" ]; then  # FIX 4: valida antes de precisar
+    print_error "gerar_relatorio.py não encontrado em: $SCRIPT_DIR"
+    exit 1
+fi
+print_success "grader1q.py, llm_interface_prova.py e gerar_relatorio.py OK"
 
 # prompt_file (lê do YAML com awk)
 PROMPT_FILE=$(awk '/^[[:space:]]*prompt_file:/{
@@ -276,11 +280,28 @@ python3 -u "$GRADER" \
 
 EXIT_CODE=${PIPESTATUS[0]}
 
+# FIX 3: consolidação só ocorre se o grader terminou com sucesso
+if [ $EXIT_CODE -eq 0 ]; then
+    # FIX 2: glob seguro com nullglob — não aborta se não houver arquivos
+    shopt -s nullglob
+    RUBRICAS=("${BASE_STUDENT_DIR}"/*/*/rubrica.txt)
+    shopt -u nullglob
+
+    if [ ${#RUBRICAS[@]} -gt 0 ]; then
+        cat "${RUBRICAS[@]}" > "${BASE_STUDENT_DIR}_ALL.txt"
+        # FIX 1: removido `-c` incorreto — python3 <arquivo>, não python3 -c <arquivo>
+        python3 "$RELATORIO" "${BASE_STUDENT_DIR}_ALL.txt" > "${BASE_STUDENT_DIR}_ALL.csv"
+    else
+        print_warning "Nenhum rubrica.txt encontrado para consolidar."
+    fi
+fi
+
 echo ""
 if [ $EXIT_CODE -eq 0 ]; then
     print_success "Correção concluída com sucesso!"
     print_step    "Log salvo em: $LOG_FILE"
     print_step    "Consolidado : ${BASE_STUDENT_DIR}_ALL.txt"
+    print_step    "Relatório   : ${BASE_STUDENT_DIR}_ALL.csv"
 elif [ $EXIT_CODE -eq 130 ]; then
     print_warning "Interrompido pelo usuário (Ctrl+C)."
 else

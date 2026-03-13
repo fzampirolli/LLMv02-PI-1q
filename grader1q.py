@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-# DESENHO DE CAIXAS (mesma estética do runProva2q.sh)
+# DESENHO DE CAIXAS (mesma estética do runProva1q.sh)
 # =============================================================================
 
 _W = 55
@@ -73,7 +73,7 @@ def box(lines: List[str]) -> str:
 
 
 # =============================================================================
-# EXTRAÇÃO DE NOTAS (heurística robusta — mesma lógica do runProva2q.sh)
+# EXTRAÇÃO DE NOTAS (heurística robusta — mesma lógica do runProva1q.sh)
 # =============================================================================
 
 def extrair_nota_texto(texto: str, q_weight: int = 100) -> str:

@@ -6,6 +6,10 @@
 #   Edite config.yaml com suas credenciais reais.
 #   NUNCA versione o config.yaml (adicione ao .gitignore).
 # =============================================================================
+# ATENÇÃO: Este arquivo contém senhas e chaves de API.
+#          NÃO versione este arquivo no Git.
+#          Adicione config.yaml ao seu .gitignore.
+# =============================================================================
 
 # --- Configuração de E-mail (SMTP) ---
 email:
@@ -15,13 +19,45 @@ email:
   password: "sua_senha_aqui"
   use_tls: true
 
+templates:
+  assunto: "Rubricas e Correções geradas por LLM - Simulado - {login}"
+  corpo: |
+    Prezado(a) {nome_pasta},
+
+    A sua nota da Prova já está disponível no Moodle.
+
+    Em anexo, envio também as competências avaliadas e uma correção detalhada gerada automaticamente por Inteligência Artificial.
+
+    Ressalto que essa correção pode conter imprecisões ou erros, especialmente nos cálculos, mas pode ser útil como apoio ao seu processo de aprendizagem na disciplina.
+
+    Para mais detalhes, consulte o arquivo `rubrica.txt` em anexo. É interessante submeter o conteúdo deste arquivo (até as duas questões de prova) a outros modelos LLMs para comparações.
+
+    No arquivo, verifique as correções geradas automaticamente pela IA a partir da linha:
+
+    AVALIACAO DA IA   
+
+    Caso tenha dúvidas sobre a correção apresentada no Moodle, estou à disposição para esclarecimentos.
+
+    Atenciosamente,  
+    Prof. Francisco Zampirolli  
+
+    PS.: Explicando o processo, as últimas versões salvas no Moodle foram anexadas ao *prompt* e enviadas a um dos LLMs escolhidos aleatoriamente, dentre os modelos abaixo:
+    modelos = (
+        "llama-3.3-70b-versatile"
+        "openai/gpt-oss-120b"
+        "llama-3.1-8b-instant"
+        "openai/gpt-oss-20b"
+    )
+    O processo se repete até que seja obtida uma resposta com conteúdo.
+    Alguns desses modelos apresentam respostas melhores, mas, devido à limitação de 30 requisições por minuto na versão gratuita do groq.com (https://console.groq.com/settings/limits), foi necessário realizar um sorteio aleatório entre eles.
+
+
 # --- Configuração da API de IA (Groq) ---
-# Obtenha sua chave em: https://console.groq.com/keys
 groq:
   api_url: "https://api.groq.com/openai/v1/chat/completions"
-  api_key: "gsk_..."
+  api_key: "gsk_sua_chave"    # ex: gsk_...
   temperature: 0.7
-  max_response_chars: 8192
+  max_response_chars: 100000
   min_response_chars: 5
   models:
     - "llama-3.3-70b-versatile"
@@ -31,17 +67,33 @@ groq:
     # - "whisper-large-v3"
     # - "whisper-large-v3-turbo"
 
+# --- Configuração da API DeepSeek ---
+deepseek:
+  api_url: "https://api.deepseek.com/v1/chat/completions"
+  api_key: "sua_deepseek_api_key_aqui"    # Substitua pela sua chave real
+  temperature: 0.3   # REDUZIDO: 0.7 → 0.3 (mais consistente)
+  max_response_chars: 8000  # REDUZIDO: 32000 → 8000 (mais que suficiente)
+  min_response_chars: 5     # Mantido
+  model: "deepseek-chat"    # ALTERADO: coder → chat (ambos são V2.5, mas "chat" é mais adequado)
+  # Alternativas: "deepseek-coder", "deepseek-chat", "deepseek-reasoner"
+
 # --- Configuração do Processamento de Provas ---
 grading:
-  use_llm: true
-  min_code_lines: 4
-  weights:
-    q1: 100          # pontuação máxima da questão
+  use_llm: true                  # true = ativa análise da IA; false = apenas notas do Moodle
+  min_code_lines: 4              # mínimo de linhas para enviar à IA
+  supported_extensions:          # ordem de prioridade
+    - py
+    - java
+  rubric_files:
+    q1: ""
+  weights:                       # peso máximo de cada questão (pontos, não %)
+    q1: 100
     q2: 0
-  mode: "1q"
-  prompt_file: "prompt1q.txt"
-  
+  mode: "1q"                     # "1q" ou "2q"
+  prompt_file: "prompt1q.txt"    # Arquivo único de prompt base
+  optional_example_file: "exemplo.txt"
+
 # --- Configuração de Pastas ---
 paths:
-  student_base_dir: "Simulado0"
+  student_base_dir: "Simulado0"   # pasta raiz com as submissões
   output_rubric_filename: "rubrica.txt"

@@ -18,6 +18,7 @@ logs/
 
 # Para a Simulado0, ignoramos o conteúdo, mas permitimos os arquivos específicos
 Simulado0/**/*
+!Simulado0_*
 !Simulado0/**/
 !Simulado0/**/execution.txt
 !Simulado0/**/Teste.py
